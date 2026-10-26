@@ -13,11 +13,37 @@
             color: #1e293b;
         }
 
-        h1 {
-            text-align: center;
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
+        }
+
+        h1 {
+            margin: 0;
             font-size: 24px;
             color: #0f172a;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #2563eb;
+            font-weight: 600;
+            padding: 8px 14px;
+            border: 1px solid #2563eb;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover {
+            background-color: #2563eb;
+            color: #ffffff;
         }
 
         table {
@@ -70,33 +96,38 @@
 </head>
 
 <body>
-    <h1>Daftar Penulis (Author)</h1>
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 80px;">ID</th>
-                <th style="width: 100px;">Photo</th>
-                <th style="width: 250px;">Name</th>
-                <th>Bio</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse ($authors as $author)
+    <div class="container">
+        <div class="header">
+            <h1>Daftar Penulis (Author)</h1>
+            <a href="{{ url('/books') }}" class="nav-link">Lihat Daftar Buku &rarr;</a>
+        </div>
+        <table>
+            <thead>
                 <tr>
-                    <td><span class="badge">{{ $author['id'] }}</span></td>
-                    <td>
-                        <img src="{{ $author['photo'] }}" alt="{{ $author['name'] }}" class="author-img">
-                    </td>
-                    <td><strong>{{ $author['name'] }}</strong></td>
-                    <td>{{ $author['bio'] }}</td>
+                    <th style="width: 80px;">ID</th>
+                    <th style="width: 100px;">Photo</th>
+                    <th style="width: 250px;">Name</th>
+                    <th>Bio</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="4" style="text-align: center;">Tidak ada data author.</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @forelse ($authors as $author)
+                    <tr>
+                        <td><span class="badge">{{ $author->id }}</span></td>
+                        <td>
+                            <img src="{{ $author->photo }}" alt="{{ $author->name }}" class="author-img">
+                        </td>
+                        <td><strong>{{ $author->name }}</strong></td>
+                        <td>{{ $author->bio }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Tidak ada data author.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </body>
 
 </html>
