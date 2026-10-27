@@ -3,14 +3,23 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
+use Illuminate\Http\JsonResponse;
 
 class AuthorController extends Controller
 {
-    public function index()
+    /**
+     * Menampilkan daftar semua author beserta relasi daftar bukunya dalam format JSON.
+     */
+    public function index(): JsonResponse
     {
-        // Mengambil semua data Author dari database 
+        // Mengambil data author beserta relasi daftar bukunya 
         $authors = Author::with('books')->get();
 
-        return view('authors.index', compact('authors'));
+        // Mengembalikan response dalam bentuk JSON
+        return response()->json([
+            'status'  => 'success',
+            'message' => 'Data author beserta buku berhasil diambil',
+            'data'    => $authors,
+        ], 200);
     }
 }
