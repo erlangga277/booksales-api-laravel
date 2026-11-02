@@ -6,6 +6,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -17,7 +18,7 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
-       public $timestamps = false;
+    public $timestamps = false;
 
     protected function casts(): array
     {
@@ -26,5 +27,11 @@ class User extends Authenticatable
             'last_access'       => 'datetime',
             'password'          => 'hashed',
         ];
+    }
+
+    // Relasi ke Transaction (customer_id)
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'customer_id');
     }
 }

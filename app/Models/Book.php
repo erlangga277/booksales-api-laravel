@@ -25,4 +25,14 @@ class Book extends Model
     {
         return $this->belongsTo(Author::class, 'author_id');
     }
+
+    public function genre()
+    {
+        return $this->belongsTo(Genre::class, 'genre_id');
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class, 'book_id');
+    }
 }
