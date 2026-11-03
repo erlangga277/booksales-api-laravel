@@ -10,19 +10,19 @@ use App\Http\Controllers\TransactionController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Read All & Show Detail Author dan Genre
-Route::apiResource('genres', GenreController::class)->only(['index', 'show']);
-Route::apiResource('authors', AuthorController::class)->only(['index', 'show']);
+// Read (index, show) & Create (store) untuk Genre dan Author
+Route::apiResource('genres', GenreController::class)->only(['index', 'show', 'store']);
+Route::apiResource('authors', AuthorController::class)->only(['index', 'show', 'store']);
 Route::get('/books', [BookController::class, 'index'])->name('api.books.index');
 
 Route::middleware('auth:sanctum')->group(function () {
     // Logout untuk user yang sedang login
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Admin Only: Create, Update, Destroy Genre & Author, Serta Read All & Destroy Transaction
+    // Admin Only: Update, Destroy Genre & Author, Serta Read All & Destroy Transaction
     Route::middleware('admin')->group(function () {
-        Route::apiResource('genres', GenreController::class)->only(['store', 'update', 'destroy']);
-        Route::apiResource('authors', AuthorController::class)->only(['store', 'update', 'destroy']);
+        Route::apiResource('genres', GenreController::class)->only(['update', 'destroy']);
+        Route::apiResource('authors', AuthorController::class)->only(['update', 'destroy']);
 
         // Transaksi khusus Admin
         Route::get('/transactions', [TransactionController::class, 'index']);
