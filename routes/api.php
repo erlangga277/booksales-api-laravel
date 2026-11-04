@@ -10,26 +10,21 @@ use App\Http\Controllers\TransactionController;
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
-// Read (index, show) & Create (store) untuk Genre dan Author
-Route::apiResource('genres', GenreController::class)->only(['index', 'show', 'store']);
-Route::apiResource('authors', AuthorController::class)->only(['index', 'show', 'store']);
+// Buka semua aksi (index, show, store, update, destroy) untuk Genre dan Author
+Route::apiResource('genres', GenreController::class);
+Route::apiResource('authors', AuthorController::class);
 Route::get('/books', [BookController::class, 'index'])->name('api.books.index');
 
 Route::middleware('auth:sanctum')->group(function () {
-    // Logout untuk user yang sedang login
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Admin Only: Update, Destroy Genre & Author, Serta Read All & Destroy Transaction
     Route::middleware('admin')->group(function () {
-        Route::apiResource('genres', GenreController::class)->only(['update', 'destroy']);
-        Route::apiResource('authors', AuthorController::class)->only(['update', 'destroy']);
-
         // Transaksi khusus Admin
         Route::get('/transactions', [TransactionController::class, 'index']);
         Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
     });
 
-    // Customer: Create, Show, Update Transaksi
+    // Customer: Transaksi
     Route::post('/transactions', [TransactionController::class, 'store']);
     Route::get('/transactions/{id}', [TransactionController::class, 'show']);
     Route::put('/transactions/{id}', [TransactionController::class, 'update']);
