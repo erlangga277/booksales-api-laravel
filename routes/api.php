@@ -13,8 +13,7 @@ Route::post('/login', [AuthController::class, 'login']);
 // Buka semua aksi (index, show, store, update, destroy) untuk Genre dan Author
 Route::apiResource('genres', GenreController::class);
 Route::apiResource('authors', AuthorController::class);
-Route::get('/books', [BookController::class, 'index'])->name('api.books.index');
-Route::get('/books/{id}', [BookController::class, 'show'])->name('api.books.show');
+Route::apiResource('books', BookController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
