@@ -11,11 +11,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'role', 'last_access'])]
+#[Fillable(['name', 'email', 'phone', 'password', 'role', 'last_access'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     public $timestamps = false;
@@ -29,7 +28,6 @@ class User extends Authenticatable
         ];
     }
 
-    // Relasi ke Transaction (customer_id)
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'customer_id');

@@ -5,12 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Author;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AuthorController extends Controller
 {
-    /**
-     * Menampilkan daftar semua author beserta relasi bukunya.
-     */
     public function index(): JsonResponse
     {
         $authors = Author::with('books')->get();
@@ -22,16 +20,17 @@ class AuthorController extends Controller
         ], 200);
     }
 
-    /**
-     * Menyimpan data author baru.
-     */
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
-            'photo' => 'nullable|string|max:255',
+            'photo' => 'nullable',
             'bio'   => 'nullable|string',
         ]);
+
+        if ($request->hasFile('photo')) {
+            $validated['photo'] = $request->file('photo')->store('authors', 'public');
+        }
 
         $author = Author::create($validated);
 
@@ -42,14 +41,10 @@ class AuthorController extends Controller
         ], 201);
     }
 
-    /**
-     * Menampilkan detail satu author berdasarkan ID beserta bukunya.
-     */
     public function show(string|int $id): JsonResponse
     {
         $author = Author::with('books')->find($id);
 
-        // Validasi jika data tidak ditemukan
         if (!$author) {
             return response()->json([
                 'status'  => 'error',
@@ -64,14 +59,10 @@ class AuthorController extends Controller
         ], 200);
     }
 
-    /**
-     * Memperbarui data author berdasarkan ID.
-     */
     public function update(Request $request, string|int $id): JsonResponse
     {
         $author = Author::find($id);
 
-        // Validasi jika data tidak ditemukan
         if (!$author) {
             return response()->json([
                 'status'  => 'error',
@@ -81,9 +72,16 @@ class AuthorController extends Controller
 
         $validated = $request->validate([
             'name'  => 'required|string|max:255',
-            'photo' => 'nullable|string|max:255',
+            'photo' => 'nullable',
             'bio'   => 'nullable|string',
         ]);
+
+        if ($request->hasFile('photo')) {
+            if ($author->photo && Storage::disk('public')->exists($author->photo)) {
+                Storage::disk('public')->delete($author->photo);
+            }
+            $validated['photo'] = $request->file('photo')->store('authors', 'public');
+        }
 
         $author->update($validated);
 
@@ -94,19 +92,19 @@ class AuthorController extends Controller
         ], 200);
     }
 
-    /**
-     * Menghapus data author berdasarkan ID.
-     */
     public function destroy(string|int $id): JsonResponse
     {
         $author = Author::find($id);
 
-        // Validasi jika data tidak ditemukan
         if (!$author) {
             return response()->json([
                 'status'  => 'error',
                 'message' => 'Data author tidak ditemukan',
             ], 404);
+        }
+
+        if ($author->photo && Storage::disk('public')->exists($author->photo)) {
+            Storage::disk('public')->delete($author->photo);
         }
 
         $author->delete();

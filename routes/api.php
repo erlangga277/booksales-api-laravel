@@ -19,7 +19,7 @@ Route::apiResource('books', BookController::class);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
-    // Customer: Kirim Pesan ke Admin (Wajib Login)
+    // Customer: Kirim Pesan ke Admin
     Route::post('/contact', [MessageController::class, 'store']);
 
     Route::middleware('admin')->group(function () {
@@ -31,13 +31,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/users/{id}', [UserController::class, 'show']);
         Route::patch('/users/{id}/role', [UserController::class, 'updateRole']);
 
-        // Pesan Masuk (Kontak Pengguna)
+        // Pesan Masuk
         Route::get('/messages', [MessageController::class, 'index']);
         Route::delete('/messages/{id}', [MessageController::class, 'destroy']);
     });
 
-    // Customer: Transaksi
+    // Customer: Transaksi Checkout
     Route::post('/transactions', [TransactionController::class, 'store']);
     Route::get('/transactions/{id}', [TransactionController::class, 'show']);
-    Route::put('/transactions/{id}', [TransactionController::class, 'update']);
 });
+
+Route::post('/midtrans-callback', [TransactionController::class, 'handleWebhook']);
+Route::post('/transactions/{id}/simulate-paid', [TransactionController::class, 'simulatePaid']);

@@ -14,6 +14,7 @@ class AuthController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|unique:users,email',
+            'phone' => 'nullable|string|max:25',
             'password' => 'required|string|min:6',
             'role' => 'nullable|string|in:admin,customer',
         ]);
@@ -21,6 +22,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
+            'phone' => $validated['phone'] ?? null,
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'] ?? 'customer',
             'email_verified_at' => now(),
@@ -31,8 +33,10 @@ class AuthController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'User registered successfully',
-            'data' => $user,
             'token' => $token,
+            'role' => $user->role,
+            'user' => $user,
+            'data' => $user,
         ], 201);
     }
 
