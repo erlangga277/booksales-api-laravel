@@ -15,7 +15,8 @@ class TransactionController extends Controller
 {
     public function __construct(
         protected MidtransService $midtransService
-    ) {}
+    ) {
+    }
 
     public function index(): JsonResponse
     {
