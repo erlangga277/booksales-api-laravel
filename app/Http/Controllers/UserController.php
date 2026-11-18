@@ -56,6 +56,17 @@ class UserController extends Controller
             ], 400);
         }
 
+        // Cegah jika admin yang diubah merupakan satu-satunya admin tersisa
+        if ($user->role === 'admin' && $request->role !== 'admin') {
+            $adminCount = User::where('role', 'admin')->count();
+            if ($adminCount <= 1) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Tidak dapat mengubah role karena ini merupakan satu-satunya akun admin yang tersisa.',
+                ], 400);
+            }
+        }
+
         $user->update([
             'role' => $request->role,
         ]);
