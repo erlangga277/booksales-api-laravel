@@ -20,7 +20,13 @@ class TransactionController extends Controller
 
     public function index(): JsonResponse
     {
-        $transactions = Transaction::with(['customer', 'items.book', 'book.author', 'book.genre'])->latest()->get();
+        $transactions = Transaction::with([
+            'customer',
+            'items.book.author',
+            'items.book.genre',
+            'book.author',
+            'book.genre'
+        ])->latest()->get();
 
         return response()->json([
             'status' => 'success',
