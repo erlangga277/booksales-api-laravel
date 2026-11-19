@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Book extends Model
 {
@@ -20,6 +21,17 @@ class Book extends Model
         'genre_id',
         'author_id',
     ];
+
+    protected $appends = ['cover_photo_url'];
+
+    public function getCoverPhotoUrlAttribute(): ?string
+    {
+        if (!$this->cover_photo) {
+            return null;
+        }
+
+        return url(Storage::url($this->cover_photo));
+    }
 
     public function author()
     {

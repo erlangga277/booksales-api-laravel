@@ -9,9 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class BookController extends Controller
 {
-    /**
-     * Menampilkan daftar semua buku beserta relasi data author dan genre dalam format JSON.
-     */
     public function index(): JsonResponse
     {
         $books = Book::with(['author', 'genre'])->get();
@@ -23,9 +20,6 @@ class BookController extends Controller
         ], 200);
     }
 
-    /**
-     * Menyimpan data buku baru
-     */
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -38,10 +32,8 @@ class BookController extends Controller
             'cover_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
-        // Jika upload file gambar
         if ($request->hasFile('cover_photo')) {
-            $path = $request->file('cover_photo')->store('books', 'public');
-            $validated['cover_photo'] = $path;
+            $validated['cover_photo'] = $request->file('cover_photo')->store('books', 'public');
         }
 
         $book = Book::create($validated);
@@ -53,9 +45,6 @@ class BookController extends Controller
         ], 201);
     }
 
-    /**
-     * Menampilkan detail satu buku.
-     */
     public function show($id): JsonResponse
     {
         $book = Book::with(['author', 'genre'])->find($id);
@@ -74,9 +63,6 @@ class BookController extends Controller
         ], 200);
     }
 
-    /**
-     * Mengupdate data buku.
-     */
     public function update(Request $request, $id): JsonResponse
     {
         $book = Book::find($id);
@@ -95,14 +81,14 @@ class BookController extends Controller
             'stock'       => 'sometimes|required|integer',
             'genre_id'    => 'sometimes|required|exists:genres,id',
             'author_id'   => 'sometimes|required|exists:authors,id',
-            'cover_photo' => 'nullable',
+            'cover_photo' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         if ($request->hasFile('cover_photo')) {
-            // Hapus cover lama jika ada di storage
             if ($book->cover_photo && Storage::disk('public')->exists($book->cover_photo)) {
                 Storage::disk('public')->delete($book->cover_photo);
             }
+
             $validated['cover_photo'] = $request->file('cover_photo')->store('books', 'public');
         }
 
@@ -115,9 +101,6 @@ class BookController extends Controller
         ], 200);
     }
 
-    /**
-     * Menghapus buku.
-     */
     public function destroy($id): JsonResponse
     {
         $book = Book::find($id);
@@ -129,7 +112,6 @@ class BookController extends Controller
             ], 404);
         }
 
-        // Hapus file gambar jika ada
         if ($book->cover_photo && Storage::disk('public')->exists($book->cover_photo)) {
             Storage::disk('public')->delete($book->cover_photo);
         }
